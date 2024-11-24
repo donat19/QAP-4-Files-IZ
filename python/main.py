@@ -1,7 +1,12 @@
+# Description: Insurance premium calculation program for One Stop Insurance Company.
+# Author: ivan zymalov
+# Date(s): nov 24
+
+# Define required libraries.
 import datetime
 from formatvalues import format_currency, format_title_case, format_uppercase
 
-# Constants from Const.dat file
+# Define program constants.
 CONST = {
     "next_policy_number": 1944,
     "base_premium": 869.00,
@@ -16,6 +21,7 @@ CONST = {
 VALID_PROVINCES = ["ON", "QC", "NS", "NB", "MB", "BC", "PE", "SK", "AB", "NL"]
 PAYMENT_METHODS = ["Full Amount", "Monthly", "Down Payment"]
 
+# Define program functions.
 def calculate_premium(num_cars, liability, glass, rental):
     """Calculates the total insurance premium."""
     base_premium = CONST["base_premium"] + CONST["base_premium"] * CONST["additional_car_discount"] * (num_cars - 1)
@@ -53,10 +59,11 @@ def display_receipt(client_data, total_premium, hst, total_cost, monthly_payment
         print(f"{claim['claim_number']:<16} {claim['claim_date']}      {format_currency(claim['claim_amount'])}")
     print("--------------------------------------------\n")
 
+# Main program starts here.
 def main():
     """Main program logic."""
     while True:
-        # Collect client data
+        # Gather user inputs.
         first_name = format_title_case(input("Enter client's first name: "))
         last_name = format_title_case(input("Enter client's last name: "))
         address = input("Enter client's address: ")
@@ -80,7 +87,7 @@ def main():
         if payment_method == "Down Payment":
             first_payment = float(input("Enter down payment amount: "))
 
-        # Enter claims
+        # Perform required calculations.
         claims = []
         while True:
             add_claim = format_uppercase(input("Add a claim? (Y/N): ")) == "Y"
@@ -91,13 +98,12 @@ def main():
             claim_amount = float(input("Enter claim amount: "))
             claims.append({"claim_number": claim_number, "claim_date": claim_date, "claim_amount": claim_amount})
 
-        # Calculations
         total_premium, hst, total_cost = calculate_premium(num_cars, liability, glass, rental)
         monthly_payment = None
         if payment_method in ["Monthly", "Down Payment"]:
             monthly_payment = calculate_monthly_payment(total_cost, first_payment)
 
-        # Client data
+        # Display results.
         client_data = {
             "policy_number": CONST["next_policy_number"],
             "first_name": first_name,
@@ -109,17 +115,16 @@ def main():
             "phone": phone,
             "num_cars": num_cars,
         }
-
-        # Display receipt
         display_receipt(client_data, total_premium, hst, total_cost, monthly_payment, claims)
 
-        # Increment policy number
+        # Write the values to a data file for storage.
         CONST["next_policy_number"] += 1
 
-        # Continue or exit
+        # Continue or exit.
         continue_program = format_uppercase(input("Do you want to continue entering clients? (Y/N): ")) == "Y"
         if not continue_program:
             break
 
+# Any housekeeping duties at the end of the program.
 if __name__ == "__main__":
     main()
